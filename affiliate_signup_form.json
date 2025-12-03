@@ -1,0 +1,149 @@
+{
+  "field_id": "8",
+  "fields": {
+    "0": {
+      "id": "0",
+      "type": "name",
+      "label": "Full Name",
+      "format": "first-last",
+      "required": "1",
+      "size": "medium",
+      "first_placeholder": "First Name",
+      "last_placeholder": "Last Name",
+      "first_default": "",
+      "last_default": ""
+    },
+    "1": {
+      "id": "1",
+      "type": "email",
+      "label": "Email Address",
+      "required": "1",
+      "size": "medium",
+      "placeholder": "your@email.com",
+      "confirmation": "1",
+      "confirmation_placeholder": "Confirm Email"
+    },
+    "2": {
+      "id": "2",
+      "type": "phone",
+      "label": "Phone Number",
+      "format": "us",
+      "required": "1",
+      "size": "medium",
+      "placeholder": "(555) 555-5555"
+    },
+    "3": {
+      "id": "3",
+      "type": "text",
+      "label": "Company / Organization",
+      "required": "0",
+      "size": "medium",
+      "placeholder": "Your company name (optional)"
+    },
+    "4": {
+      "id": "4",
+      "type": "select",
+      "label": "How did you hear about us?",
+      "required": "1",
+      "size": "medium",
+      "choices": {
+        "1": {
+          "label": "Current Student",
+          "value": "Current Student"
+        },
+        "2": {
+          "label": "Past Student",
+          "value": "Past Student"
+        },
+        "3": {
+          "label": "Online Search",
+          "value": "Online Search"
+        },
+        "4": {
+          "label": "Social Media",
+          "value": "Social Media"
+        },
+        "5": {
+          "label": "Referral from Friend/Colleague",
+          "value": "Referral"
+        },
+        "6": {
+          "label": "Other",
+          "value": "Other"
+        }
+      }
+    },
+    "5": {
+      "id": "5",
+      "type": "textarea",
+      "label": "Why do you want to become an SST.NYC affiliate?",
+      "description": "Tell us about your connections to the NYC construction industry and why you'd be a great affiliate partner.",
+      "required": "1",
+      "size": "medium",
+      "placeholder": "I want to become an affiliate because...",
+      "limit_count": "1",
+      "limit_mode": "characters",
+      "limit_controls": "1"
+    },
+    "6": {
+      "id": "6",
+      "type": "checkbox",
+      "label": "Terms and Conditions",
+      "required": "1",
+      "size": "medium",
+      "choices": {
+        "1": {
+          "label": "I agree to the SST.NYC Affiliate Program Terms and Conditions. I understand that affiliate approval is at the sole discretion of SST.NYC and may take 2-3 business days.",
+          "value": "Agreed"
+        }
+      }
+    },
+    "7": {
+      "id": "7",
+      "type": "html",
+      "label": "Program Benefits",
+      "code": "<div style=\"background: #f0f8ff; padding: 20px; border-left: 4px solid #0066cc; margin: 20px 0;\">\n<h3 style=\"margin-top: 0; color: #0066cc;\">🎯 Affiliate Program Benefits</h3>\n<ul style=\"line-height: 1.8;\">\n<li><strong>10% Commission</strong> on every course sale</li>\n<li><strong>60-Day Cookie Duration</strong> - earn from repeat visitors</li>\n<li><strong>Unique QR Codes</strong> for easy offline sharing</li>\n<li><strong>Marketing Materials</strong> provided</li>\n<li><strong>Monthly Payouts</strong> via PayPal or direct deposit</li>\n<li><strong>Dedicated Support</strong> - we're here to help you succeed</li>\n</ul>\n<p style=\"margin-bottom: 0; font-size: 0.9em; color: #666;\">No signup fees. No monthly costs. Just earn when you refer!</p>\n</div>"
+    }
+  },
+  "settings": {
+    "form_title": "SST.NYC Affiliate Program Application",
+    "form_desc": "Join our affiliate program and earn 10% commission on every NYC DOB Site Safety Training course you refer. Perfect for construction professionals, trainers, and industry influencers.",
+    "submit_text": "Submit Application",
+    "submit_text_processing": "Processing...",
+    "ajax_submit": "1",
+    "notification_enable": "1",
+    "notifications": {
+      "1": {
+        "notification_name": "Admin Notification",
+        "email": "{admin_email}",
+        "subject": "New Affiliate Application: {field_id=\"0\"}",
+        "sender_name": "SST.NYC Affiliate Program",
+        "sender_address": "{admin_email}",
+        "replyto": "{field_id=\"1\"}",
+        "message": "New affiliate application received:\n\n<strong>Applicant Details:</strong>\nName: {field_id=\"0\"}\nEmail: {field_id=\"1\"}\nPhone: {field_id=\"2\"}\nCompany: {field_id=\"3\"}\n\n<strong>How They Heard About Us:</strong>\n{field_id=\"4\"}\n\n<strong>Motivation:</strong>\n{field_id=\"5\"}\n\n<strong>Terms Accepted:</strong> {field_id=\"6\"}\n\nReview this application and approve/reject in Google Sheets.\n\n<strong>Next Steps:</strong>\n1. Open the SST Affiliate Management spreadsheet\n2. Review application details\n3. Set Status to \"Approved\" or \"Rejected\"\n4. If approved, Zapier will auto-generate QR codes and send welcome email"
+      },
+      "2": {
+        "notification_name": "User Confirmation",
+        "email": "{field_id=\"1\"}",
+        "subject": "Your SST.NYC Affiliate Application Received",
+        "sender_name": "SST.NYC Affiliate Team",
+        "sender_address": "{admin_email}",
+        "message": "Hi {field_id=\"0\"},\n\nThank you for applying to the SST.NYC Affiliate Program!\n\n<strong>Application Details:</strong>\nName: {field_id=\"0\"}\nEmail: {field_id=\"1\"}\nCompany: {field_id=\"3\"}\n\nYour application is now under review. Our team will evaluate your submission and respond within 2-3 business days.\n\n<strong>What happens next?</strong>\n✓ Our team reviews your application\n✓ You'll receive approval or further instructions via email\n✓ Once approved, you'll get your unique affiliate link and QR code\n✓ Start earning 10% commission on every course referral!\n\n<strong>Program Benefits:</strong>\n• 10% commission on all course sales\n• 60-day cookie tracking\n• Custom QR codes for offline marketing\n• Marketing materials provided\n• Monthly payouts\n\nQuestions? Reply to this email or contact affiliates@sst.nyc\n\nBest regards,\nThe SST.NYC Team"
+      }
+    },
+    "confirmations": {
+      "1": {
+        "type": "message",
+        "message": "<div style=\"background: #d4edda; border: 2px solid #28a745; padding: 30px; border-radius: 8px; text-align: center;\">\n<h2 style=\"color: #155724; margin-top: 0;\">🎉 Application Submitted Successfully!</h2>\n<p style=\"font-size: 1.1em; color: #155724;\">Thank you for applying to the SST.NYC Affiliate Program!</p>\n<hr style=\"border: 0; border-top: 1px solid #c3e6cb; margin: 20px 0;\">\n<h3 style=\"color: #155724;\">What Happens Next?</h3>\n<ol style=\"text-align: left; max-width: 500px; margin: 20px auto; line-height: 1.8; color: #155724;\">\n<li><strong>Email Confirmation</strong> - Check your inbox for a confirmation email</li>\n<li><strong>Application Review</strong> - Our team will review within 2-3 business days</li>\n<li><strong>Approval Notification</strong> - You'll receive your unique affiliate link & QR code</li>\n<li><strong>Start Earning</strong> - Share your link and earn 10% per sale!</li>\n</ol>\n<p style=\"margin-top: 30px; color: #155724;\"><strong>Questions?</strong> Email us at <a href=\"mailto:affiliates@sst.nyc\" style=\"color: #0066cc;\">affiliates@sst.nyc</a></p>\n</div>",
+        "message_scroll": "1"
+      }
+    },
+    "antispam": "1",
+    "ajax_submit": "1",
+    "form_class": "sst-affiliate-form",
+    "submit_class": "wpforms-submit-large"
+  },
+  "meta": {
+    "template": "blank"
+  }
+}

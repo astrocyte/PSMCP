@@ -1,6 +1,6 @@
-# WordPress MCP Server
+# Mercado - SST.NYC Comprehensive Admin System
 
-A Model Context Protocol (MCP) server for managing WordPress sites, with specialized tools for SEO optimization and site administration.
+A complete WordPress management system combining MCP server tools, LearnDash LMS automation, WooCommerce integration, and affiliate program management for SST.NYC.
 
 ## Features
 
@@ -8,6 +8,10 @@ A Model Context Protocol (MCP) server for managing WordPress sites, with special
 - **REST API Access**: Query WordPress data in real-time
 - **SEO Tools**: Analyze pages, audit metadata, validate schema
 - **Elementor Support**: Parse and analyze Elementor page builder content
+- **LearnDash LMS**: Course, lesson, quiz, and student management
+- **WooCommerce**: Product, order, and sales management
+- **Mailchimp**: Email marketing automation
+- **Affiliate Program**: Complete management system with Zapier automation
 - **Multi-Environment**: Support for production, staging, and local environments
 
 ## Prerequisites
@@ -119,6 +123,25 @@ The server will be available via stdio for MCP clients (Claude Desktop, etc.)
 
 ### Monitoring (1 tool)
 - `wp_check_updates`: Check for available updates
+
+## Affiliate Management Tools
+
+Located in `tools/affiliate-management/`:
+
+- **Google Sheets Integration**: Automated affiliate signup tracking
+- **CSV Template**: Quick import template for Google Sheets
+- **Python Scripts**: Automated sheet creation with OAuth
+- **Zapier Workflows**: WPForms → Google Sheets → Email automation
+
+See `tools/affiliate-management/AFFILIATE_SHEET_SETUP.md` for setup instructions.
+
+## Documentation
+
+- **AFFILIATE_PROGRAM_DESIGN.md** - Complete affiliate program architecture
+- **ZAPIER_SETUP_INSTRUCTIONS.md** - Step-by-step Zapier workflow setup
+- **ZAPIER_MCP_SETUP.md** - Zapier MCP integration guide
+- **LEARNDASH_BEST_PRACTICES.md** - LMS course design guidelines
+- **DEPLOYMENT_GUIDE.md** - System deployment instructions
 
 ## Development
 
