@@ -15,7 +15,7 @@ from .seo_tools import SEOAnalyzer
 from .image_optimizer import ImageOptimizer
 from .learndash_manager import LearnDashManager
 from .woocommerce_manager import WooCommerceManager
-from .mailchimp_manager import MailchimpManager
+from .backup_manager import BackupManager
 
 # Load environment variables
 load_dotenv()
@@ -29,13 +29,13 @@ wp_api: WordPressAPIClient | None = None
 img_optimizer: ImageOptimizer | None = None
 ld_manager: LearnDashManager | None = None
 wc_manager: WooCommerceManager | None = None
-mc_manager: MailchimpManager | None = None
+backup_manager: BackupManager | None = None
 config: WordPressConfig | None = None
 
 
 def get_clients():
     """Get or initialize WordPress clients."""
-    global wp_cli, wp_api, img_optimizer, ld_manager, wc_manager, mc_manager, config
+    global wp_cli, wp_api, img_optimizer, ld_manager, wc_manager, backup_manager, config
 
     if config is None:
         config = WordPressConfig.from_env()
@@ -58,10 +58,10 @@ def get_clients():
     if wc_manager is None:
         wc_manager = WooCommerceManager(config, wp_api)
 
-    if mc_manager is None and config.mailchimp_api_key and config.mailchimp_server:
-        mc_manager = MailchimpManager(config.mailchimp_api_key, config.mailchimp_server)
+    if backup_manager is None:
+        backup_manager = BackupManager(config)
 
-    return wp_cli, wp_api, img_optimizer, ld_manager, wc_manager, mc_manager
+    return wp_cli, wp_api, img_optimizer, ld_manager, wc_manager, backup_manager
 
 
 @server.list_tools()
@@ -476,82 +476,46 @@ async def list_tools() -> list[Tool]:
                 },
             },
         ),
-        # Mailchimp Email Marketing
+        # Backup Management
         Tool(
-            name="mc_list_audiences",
-            description="List all Mailchimp audiences (email lists)",
+            name="wp_create_backup",
+            description="Create a complete WordPress backup (database + files) and download to local machine",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "include_files": {
+                        "type": "boolean",
+                        "description": "Include wp-content directory",
+                        "default": True,
+                    },
+                    "include_database": {
+                        "type": "boolean",
+                        "description": "Include database dump",
+                        "default": True,
+                    },
+                },
+            },
+        ),
+        Tool(
+            name="wp_list_backups",
+            description="List all available local backups",
             inputSchema={
                 "type": "object",
                 "properties": {},
             },
         ),
         Tool(
-            name="mc_add_subscriber",
-            description="Add or update a subscriber to an audience",
+            name="wp_delete_backup",
+            description="Delete a specific backup file",
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "list_id": {"type": "string", "description": "Audience ID (optional, uses default)"},
-                    "email": {"type": "string", "description": "Email address"},
-                    "first_name": {"type": "string", "description": "First name (optional)"},
-                    "last_name": {"type": "string", "description": "Last name (optional)"},
-                    "tags": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Tags to apply (optional)",
+                    "backup_filename": {
+                        "type": "string",
+                        "description": "Filename of backup to delete (e.g., sst_nyc_20251203_153000.tar.gz)",
                     },
                 },
-                "required": ["email"],
-            },
-        ),
-        Tool(
-            name="mc_create_campaign",
-            description="Create an email campaign",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "list_id": {"type": "string", "description": "Audience ID (optional, uses default)"},
-                    "subject": {"type": "string", "description": "Email subject line"},
-                    "from_name": {"type": "string", "description": "Sender name"},
-                    "reply_to": {"type": "string", "description": "Reply-to email"},
-                },
-                "required": ["subject", "from_name", "reply_to"],
-            },
-        ),
-        Tool(
-            name="mc_send_campaign",
-            description="Send an email campaign immediately",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "campaign_id": {"type": "string", "description": "Campaign ID to send"},
-                },
-                "required": ["campaign_id"],
-            },
-        ),
-        Tool(
-            name="mc_get_campaign_report",
-            description="Get campaign performance stats",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "campaign_id": {"type": "string", "description": "Campaign ID"},
-                },
-                "required": ["campaign_id"],
-            },
-        ),
-        Tool(
-            name="mc_tag_course_student",
-            description="Tag a subscriber with course enrollment info",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "list_id": {"type": "string", "description": "Audience ID (optional, uses default)"},
-                    "email": {"type": "string", "description": "Student email"},
-                    "course_name": {"type": "string", "description": "Course title"},
-                    "course_id": {"type": "number", "description": "Course ID"},
-                },
-                "required": ["email", "course_name", "course_id"],
+                "required": ["backup_filename"],
             },
         ),
     ]
@@ -561,7 +525,7 @@ async def list_tools() -> list[Tool]:
 async def call_tool(name: str, arguments: Any) -> list[TextContent]:
     """Handle tool calls."""
     try:
-        cli, api, img_opt, ld, wc, mc = get_clients()
+        cli, api, img_opt, ld, wc, backup = get_clients()
 
         # Site Info & Management
         if name == "wp_get_info":
@@ -842,81 +806,53 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             )
             return [TextContent(type="text", text=str(report))]
 
-        # Mailchimp Email Marketing
-        elif name == "mc_list_audiences":
-            if not mc:
-                return [TextContent(type="text", text="Mailchimp not configured. Add MAILCHIMP_API_KEY to .env")]
+        # Backup Management
+        elif name == "wp_create_backup":
+            include_files = arguments.get("include_files", True)
+            include_database = arguments.get("include_database", True)
 
-            audiences = mc.list_audiences()
-            return [TextContent(type="text", text=str(audiences))]
-
-        elif name == "mc_add_subscriber":
-            if not mc:
-                return [TextContent(type="text", text="Mailchimp not configured. Add MAILCHIMP_API_KEY to .env")]
-
-            list_id = arguments.get("list_id") or config.mailchimp_list_id
-            if not list_id:
-                return [TextContent(type="text", text="No list_id provided and no default configured")]
-
-            merge_fields = {}
-            if arguments.get("first_name"):
-                merge_fields["FNAME"] = arguments["first_name"]
-            if arguments.get("last_name"):
-                merge_fields["LNAME"] = arguments["last_name"]
-
-            result = mc.add_member(
-                list_id=list_id,
-                email=arguments["email"],
-                merge_fields=merge_fields if merge_fields else None,
-                tags=arguments.get("tags"),
+            result = backup.create_backup(
+                include_files=include_files,
+                include_database=include_database
             )
-            return [TextContent(type="text", text=str(result))]
 
-        elif name == "mc_create_campaign":
-            if not mc:
-                return [TextContent(type="text", text="Mailchimp not configured")]
+            summary = f"""
+Backup Created Successfully!
 
-            list_id = arguments.get("list_id") or config.mailchimp_list_id
-            if not list_id:
-                return [TextContent(type="text", text="No list_id provided and no default configured")]
+Timestamp: {result['timestamp']}
+Archive: {result['archive_path']}
+Total Size: {result['total_size']}
 
-            campaign = mc.create_campaign(
-                list_id=list_id,
-                subject=arguments["subject"],
-                from_name=arguments["from_name"],
-                reply_to=arguments["reply_to"],
-            )
-            return [TextContent(type="text", text=str(campaign))]
+Backed up:
+- Database: {'✓' if result['database_backed_up'] else '✗'} {result.get('database_size', '')}
+- Files: {'✓' if result['files_backed_up'] else '✗'} {result.get('files_size', '')}
 
-        elif name == "mc_send_campaign":
-            if not mc:
-                return [TextContent(type="text", text="Mailchimp not configured")]
+The backup is saved locally and excluded from git via .gitignore
+"""
+            return [TextContent(type="text", text=summary)]
 
-            result = mc.send_campaign(arguments["campaign_id"])
-            return [TextContent(type="text", text=str(result))]
+        elif name == "wp_list_backups":
+            backups = backup.list_backups()
 
-        elif name == "mc_get_campaign_report":
-            if not mc:
-                return [TextContent(type="text", text="Mailchimp not configured")]
+            if not backups:
+                return [TextContent(type="text", text="No backups found in ./backups/")]
 
-            report = mc.get_campaign_report(arguments["campaign_id"])
-            return [TextContent(type="text", text=str(report))]
+            result = "Available Backups:\n\n"
+            for b in backups:
+                result += f"- {b['filename']}\n"
+                result += f"  Size: {b['size']}\n"
+                result += f"  Created: {b['created']}\n\n"
 
-        elif name == "mc_tag_course_student":
-            if not mc:
-                return [TextContent(type="text", text="Mailchimp not configured")]
+            return [TextContent(type="text", text=result)]
 
-            list_id = arguments.get("list_id") or config.mailchimp_list_id
-            if not list_id:
-                return [TextContent(type="text", text="No list_id provided and no default configured")]
+        elif name == "wp_delete_backup":
+            filename = arguments["backup_filename"]
+            success = backup.delete_backup(filename)
 
-            result = mc.sync_course_enrollment(
-                list_id=list_id,
-                user_email=arguments["email"],
-                course_name=arguments["course_name"],
-                course_id=arguments["course_id"],
-            )
-            return [TextContent(type="text", text=str(result))]
+            if success:
+                return [TextContent(type="text", text=f"✓ Backup deleted: {filename}")]
+            else:
+                return [TextContent(type="text", text=f"✗ Backup not found: {filename}")]
 
         else:
             return [TextContent(type="text", text=f"Unknown tool: {name}")]
