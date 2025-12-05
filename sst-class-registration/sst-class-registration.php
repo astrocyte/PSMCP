@@ -12,7 +12,7 @@
 if (!defined('ABSPATH')) exit;
 
 // Define plugin constants
-define('SST_CLASS_REG_VERSION', '1.1');
+define('SST_CLASS_REG_VERSION', '1.2');
 define('SST_CLASS_REG_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('SST_CLASS_REG_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -121,8 +121,67 @@ class SST_Class_Registration_Manager {
         ]);
         add_option('sst_class_reg_class_options', $default_classes);
 
+        // Auto-create WPForms form if WPForms is active
+        $this->maybe_create_wpforms_form();
+
         // Flush rewrite rules
         flush_rewrite_rules();
+    }
+
+    /**
+     * Create WPForms form if it doesn't exist
+     */
+    private function maybe_create_wpforms_form() {
+        // Check if WPForms is active
+        if (!function_exists('wpforms')) {
+            return;
+        }
+
+        // Check if we already have a form configured
+        $existing_form_id = get_option('sst_class_reg_form_id', '');
+        if (!empty($existing_form_id) && get_post($existing_form_id)) {
+            return; // Form already exists
+        }
+
+        // Load form JSON from plugin
+        $form_json_file = SST_CLASS_REG_PLUGIN_DIR . 'inperson_registration_form.json';
+        if (!file_exists($form_json_file)) {
+            return;
+        }
+
+        $form_content = file_get_contents($form_json_file);
+        if (empty($form_content)) {
+            return;
+        }
+
+        // Validate JSON
+        $form_data = json_decode($form_content, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return;
+        }
+
+        // Create the WPForms post
+        $form_id = wp_insert_post([
+            'post_title'   => 'In-Person Class Registration',
+            'post_status'  => 'publish',
+            'post_type'    => 'wpforms',
+            'post_content' => $form_content,
+        ]);
+
+        if ($form_id && !is_wp_error($form_id)) {
+            // Update the form content with the new ID
+            $form_data['id'] = $form_id;
+            wp_update_post([
+                'ID' => $form_id,
+                'post_content' => wp_json_encode($form_data),
+            ]);
+
+            // Save the form ID to options
+            update_option('sst_class_reg_form_id', $form_id);
+
+            // Log success
+            error_log('SST Class Registration: Created WPForms form ID ' . $form_id);
+        }
     }
 
     /**
