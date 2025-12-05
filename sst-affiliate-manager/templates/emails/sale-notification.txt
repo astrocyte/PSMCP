@@ -1,0 +1,22 @@
+Subject: Cha-Ching! You Just Made {{COMMISSION_AMOUNT}}
+
+Hey {{FIRST_NAME}},
+
+Someone just used your code. You made money.
+
+THE NUMBERS:
+------------------------
+Order #{{ORDER_NUMBER}}
+Order Total: {{ORDER_TOTAL}}
+Your Cut ({{COMMISSION_RATE}}%): {{COMMISSION_AMOUNT}}
+Date: {{ORDER_DATE}}
+
+WHAT THEY BOUGHT:
+{{PRODUCTS}}
+
+Your coupon code ({{COUPON_CODE}}) is doing its job. Keep sharing it.
+
+Quick math: Get 10 people to use your code this month and that's real money in your pocket. You're already on the board.
+
+- The SST Team
+SST.NYC

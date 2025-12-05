@@ -132,37 +132,27 @@ class SST_Affiliate {
     }
 
     /**
-     * Send approval email to affiliate
+     * Send approval email to affiliate using template system
      */
     private function send_approval_email($affiliate_id) {
         $affiliate = $this->db->get_affiliate($affiliate_id);
         if (!$affiliate) return;
 
-        $subject = 'Welcome to the SST.NYC Affiliate Program!';
+        // Prepare template data
+        $data = [
+            '{{FIRST_NAME}}' => $affiliate->first_name,
+            '{{LAST_NAME}}' => $affiliate->last_name,
+            '{{FULL_NAME}}' => $affiliate->first_name . ' ' . $affiliate->last_name,
+            '{{EMAIL}}' => $affiliate->email,
+            '{{AFFILIATE_ID}}' => $affiliate->affiliate_id,
+            '{{COMMISSION_RATE}}' => $affiliate->commission_rate,
+            '{{REFERRAL_LINK}}' => $affiliate->referral_link,
+            '{{COUPON_CODE}}' => $affiliate->coupon_code ?? 'N/A',
+        ];
 
-        $message = "Hi " . $affiliate->first_name . ",\n\n";
-        $message .= "Congratulations! Your affiliate application has been approved.\n\n";
-        $message .= "Your Affiliate Details:\n";
-        $message .= "• Affiliate ID: " . $affiliate->affiliate_id . "\n";
-        $message .= "• Commission Rate: " . $affiliate->commission_rate . "%\n";
-        $message .= "• Referral Link: " . $affiliate->referral_link . "\n\n";
-
-        // Add coupon code if it exists
-        $updated_affiliate = $this->db->get_affiliate($affiliate_id);
-        if (!empty($updated_affiliate->coupon_code)) {
-            $message .= "• Your Coupon Code: " . $updated_affiliate->coupon_code . "\n\n";
-        }
-
-        $message .= "How to Get Started:\n";
-        $message .= "1. Share your referral link with construction professionals\n";
-        $message .= "2. Share your unique coupon code for easy tracking\n";
-        $message .= "3. When someone signs up using your link or coupon, you earn commission!\n\n";
-        $message .= "Questions? Email support@sst.nyc\n\n";
-        $message .= "Best regards,\n";
-        $message .= "The Predictive Safety Team\n";
-        $message .= "SST.NYC";
-
-        wp_mail($affiliate->email, $subject, $message);
+        // Send using template system
+        $email_template = SST_Email_Template::get_instance();
+        $email_template->send('affiliate-approved', $affiliate->email, $data);
     }
 
     /**

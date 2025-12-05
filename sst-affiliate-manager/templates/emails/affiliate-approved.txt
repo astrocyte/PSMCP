@@ -1,0 +1,33 @@
+Subject: You're In. Now Go Make Some Money.
+
+Hey {{FIRST_NAME}},
+
+You're in.
+
+Your affiliate application got approved. You can now make money every time someone uses your link or coupon code to get their SST card.
+
+YOUR AFFILIATE DETAILS:
+------------------------
+Affiliate ID: {{AFFILIATE_ID}}
+Commission Rate: {{COMMISSION_RATE}}%
+Referral Link: {{REFERRAL_LINK}}
+Coupon Code: {{COUPON_CODE}}
+
+HOW THIS WORKS:
+------------------------
+1. Share your referral link with anyone who needs DOB training
+2. Give out your coupon code (people love discounts)
+3. They sign up. You get paid. Everyone's happy.
+
+WHO NEEDS THIS?
+Construction workers, foremen, site safety managers, scaffolders, riggers—basically anyone working on a job site in NYC. You probably know like 50 of them.
+
+THE NICE PART:
+You're not selling junk. You're sharing something people actually need. The DOB requires this training. They're taking it anyway. Might as well save them some cash and make money while you're at it.
+
+Questions? Email support@sst.nyc—we actually respond.
+
+Welcome to the team. Now go get paid.
+
+- The SST Team
+SST.NYC

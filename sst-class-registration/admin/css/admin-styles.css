@@ -1,0 +1,147 @@
+/**
+ * SST Class Registration Admin Styles
+ */
+
+/* Badge styles */
+.sst-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1.4;
+}
+
+.sst-badge-new {
+    background: #0073aa;
+    color: #fff;
+}
+
+.sst-badge-pending {
+    background: #f0ad4e;
+    color: #fff;
+}
+
+.sst-badge-success {
+    background: #46b450;
+    color: #fff;
+}
+
+.sst-badge-error {
+    background: #dc3232;
+    color: #fff;
+}
+
+.sst-badge-cancelled {
+    background: #999;
+    color: #fff;
+}
+
+/* List table adjustments */
+.wp-list-table .column-registration_id {
+    width: 90px;
+}
+
+.wp-list-table .column-name {
+    width: 150px;
+}
+
+.wp-list-table .column-email {
+    width: 200px;
+}
+
+.wp-list-table .column-phone {
+    width: 120px;
+}
+
+.wp-list-table .column-class_name {
+    width: 180px;
+}
+
+.wp-list-table .column-sst_number {
+    width: 80px;
+}
+
+.wp-list-table .column-cards {
+    width: 60px;
+    text-align: center;
+}
+
+.wp-list-table .column-enrollment_status,
+.wp-list-table .column-status {
+    width: 100px;
+}
+
+.wp-list-table .column-created_at {
+    width: 100px;
+}
+
+/* Card icons */
+.wp-list-table .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* Postbox styling */
+.postbox h2.hndle {
+    border-bottom: 1px solid #ccd0d4;
+}
+
+/* Form table in detail view */
+.postbox .form-table th {
+    width: 150px;
+    padding: 10px 10px 10px 0;
+}
+
+.postbox .form-table td {
+    padding: 10px;
+}
+
+/* Action buttons */
+.postbox .button {
+    margin-bottom: 5px;
+}
+
+/* Stats cards (if needed later) */
+.sst-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.sst-stat-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    flex: 1;
+    text-align: center;
+}
+
+.sst-stat-card h3 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.sst-stat-card .number {
+    font-size: 36px;
+    font-weight: 600;
+    color: #0073aa;
+}
+
+/* Settings page */
+.settings-section {
+    margin-bottom: 30px;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .wp-list-table .column-phone,
+    .wp-list-table .column-sst_number,
+    .wp-list-table .column-cards {
+        display: none;
+    }
+}

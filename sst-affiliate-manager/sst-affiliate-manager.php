@@ -54,6 +54,7 @@ class SST_Affiliate_Manager {
         require_once SST_AFFILIATE_PLUGIN_DIR . 'includes/class-coupon-manager.php';
         require_once SST_AFFILIATE_PLUGIN_DIR . 'includes/class-commission-manager.php';
         require_once SST_AFFILIATE_PLUGIN_DIR . 'includes/class-email-notifications.php';
+        require_once SST_AFFILIATE_PLUGIN_DIR . 'includes/class-email-template.php';
 
         // Admin includes
         if (is_admin()) {

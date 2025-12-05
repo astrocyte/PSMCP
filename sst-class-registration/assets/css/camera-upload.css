@@ -1,0 +1,131 @@
+/**
+ * SST Class Registration - Camera Upload Styles
+ */
+
+.sst-upload-wrapper {
+    margin-top: 10px;
+}
+
+.sst-upload-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.sst-upload-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sst-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 2px solid #0073aa;
+    border-radius: 6px;
+    background: #fff;
+    color: #0073aa;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sst-btn:hover {
+    background: #0073aa;
+    color: #fff;
+}
+
+.sst-btn .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.sst-btn-camera {
+    border-color: #46b450;
+    color: #46b450;
+}
+
+.sst-btn-camera:hover {
+    background: #46b450;
+    color: #fff;
+}
+
+/* Preview styles */
+.sst-preview {
+    margin-top: 15px;
+}
+
+.sst-preview-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    max-width: 100%;
+}
+
+.sst-preview-item img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.sst-preview-file .dashicons {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #666;
+}
+
+.sst-preview-name {
+    font-size: 13px;
+    color: #333;
+    word-break: break-all;
+    max-width: 200px;
+}
+
+.sst-preview-remove {
+    background: #dc3232;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.sst-preview-remove:hover {
+    background: #a00;
+}
+
+/* Mobile optimizations */
+@media screen and (max-width: 600px) {
+    .sst-upload-buttons {
+        flex-direction: column;
+    }
+
+    .sst-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 15px 20px;
+    }
+
+    .sst-preview-item {
+        flex-wrap: wrap;
+    }
+
+    .sst-preview-name {
+        max-width: 100%;
+        flex: 1;
+    }
+}

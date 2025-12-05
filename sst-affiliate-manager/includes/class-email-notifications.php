@@ -51,7 +51,7 @@ class SST_Email_Notifications {
     }
 
     /**
-     * Send sale notification email to affiliate
+     * Send sale notification email to affiliate using template system
      *
      * @param object $affiliate Affiliate record
      * @param WC_Order $order WooCommerce order
@@ -60,32 +60,31 @@ class SST_Email_Notifications {
         $order_total = $order->get_total();
         $commission = $order_total * ($affiliate->commission_rate / 100);
 
-        $subject = '💰 New Sale! You earned $' . number_format($commission, 2) . ' commission';
-
-        $message = "Hi " . $affiliate->first_name . ",\n\n";
-        $message .= "Great news! Someone just used your coupon code and completed a purchase.\n\n";
-        $message .= "📊 Sale Details:\n";
-        $message .= "• Order #: " . $order->get_order_number() . "\n";
-        $message .= "• Order Total: $" . number_format($order_total, 2) . "\n";
-        $message .= "• Your Commission (" . $affiliate->commission_rate . "%): $" . number_format($commission, 2) . "\n";
-        $message .= "• Date: " . $order->get_date_created()->format('F j, Y g:i A') . "\n\n";
-
-        $message .= "📦 Products Purchased:\n";
+        // Build products list
+        $products = [];
         foreach ($order->get_items() as $item) {
-            $message .= "  - " . $item->get_name() . " x" . $item->get_quantity() . "\n";
+            $products[] = '- ' . $item->get_name() . ' x' . $item->get_quantity();
         }
 
-        $message .= "\n🎯 Keep sharing your coupon code (" . $affiliate->coupon_code . ") to earn more!\n\n";
-        $message .= "Questions? Reply to this email or contact support@sst.nyc\n\n";
-        $message .= "Best regards,\n";
-        $message .= "The Predictive Safety Team\n";
-        $message .= "SST.NYC";
+        // Prepare template data
+        $data = [
+            '{{FIRST_NAME}}' => $affiliate->first_name,
+            '{{ORDER_NUMBER}}' => $order->get_order_number(),
+            '{{ORDER_TOTAL}}' => '$' . number_format($order_total, 2),
+            '{{COMMISSION_RATE}}' => $affiliate->commission_rate,
+            '{{COMMISSION_AMOUNT}}' => '$' . number_format($commission, 2),
+            '{{ORDER_DATE}}' => $order->get_date_created()->format('F j, Y g:i A'),
+            '{{PRODUCTS}}' => implode("\n", $products),
+            '{{COUPON_CODE}}' => $affiliate->coupon_code,
+        ];
 
-        wp_mail($affiliate->email, $subject, $message);
+        // Send using template system
+        $email_template = SST_Email_Template::get_instance();
+        $email_template->send('sale-notification', $affiliate->email, $data);
     }
 
     /**
-     * Send commission payment notification
+     * Send commission payment notification using template system
      *
      * @param string $affiliate_id Affiliate ID
      * @param float $amount Payment amount
@@ -106,29 +105,21 @@ class SST_Email_Notifications {
         $commission_manager = new SST_Commission_Manager();
         $stats = $commission_manager->get_affiliate_stats($affiliate->coupon_code);
 
-        $subject = '💸 Commission Payment: $' . number_format($amount, 2) . ' sent!';
+        // Prepare template data
+        $data = [
+            '{{FIRST_NAME}}' => $affiliate->first_name,
+            '{{PAYMENT_AMOUNT}}' => '$' . number_format($amount, 2),
+            '{{PAYMENT_DATE}}' => current_time('F j, Y'),
+            '{{PAYMENT_NOTES}}' => !empty($notes) ? $notes : 'None',
+            '{{TOTAL_SALES}}' => '$' . number_format($stats['total_sales'], 2),
+            '{{TOTAL_COMMISSION}}' => '$' . number_format($stats['total_commission'], 2),
+            '{{COMMISSION_PAID}}' => '$' . number_format($stats['commission_paid'], 2),
+            '{{COMMISSION_PENDING}}' => '$' . number_format($stats['commission_pending'], 2),
+        ];
 
-        $message = "Hi " . $affiliate->first_name . ",\n\n";
-        $message .= "Your commission payment has been processed!\n\n";
-        $message .= "💰 Payment Details:\n";
-        $message .= "• Amount Paid: $" . number_format($amount, 2) . "\n";
-        $message .= "• Payment Date: " . current_time('F j, Y') . "\n";
-        if (!empty($notes)) {
-            $message .= "• Notes: " . $notes . "\n";
-        }
-        $message .= "\n📊 Your Updated Stats:\n";
-        $message .= "• Total Sales: $" . number_format($stats['total_sales'], 2) . "\n";
-        $message .= "• Total Commission Earned: $" . number_format($stats['total_commission'], 2) . "\n";
-        $message .= "• Commission Paid to Date: $" . number_format($stats['commission_paid'], 2) . "\n";
-        $message .= "• Commission Pending: $" . number_format($stats['commission_pending'], 2) . "\n\n";
-
-        $message .= "🎯 Keep up the great work!\n\n";
-        $message .= "Questions about your payment? Reply to this email or contact support@sst.nyc\n\n";
-        $message .= "Best regards,\n";
-        $message .= "The Predictive Safety Team\n";
-        $message .= "SST.NYC";
-
-        wp_mail($affiliate->email, $subject, $message);
+        // Send using template system
+        $email_template = SST_Email_Template::get_instance();
+        $email_template->send('payment-notification', $affiliate->email, $data);
     }
 
     /**

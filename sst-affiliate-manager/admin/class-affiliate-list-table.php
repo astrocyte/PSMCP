@@ -98,6 +98,17 @@ class SST_Affiliate_List_Table extends WP_List_Table {
     }
 
     /**
+     * Column Email - clickable mailto link
+     */
+    public function column_email($item) {
+        return sprintf(
+            '<a href="mailto:%s">%s</a>',
+            esc_attr($item->email),
+            esc_html($item->email)
+        );
+    }
+
+    /**
      * Column Coupon Code
      */
     public function column_coupon_code($item) {

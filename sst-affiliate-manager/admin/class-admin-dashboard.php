@@ -25,6 +25,7 @@ class SST_Affiliate_Admin_Dashboard {
         add_action('admin_post_sst_delete_affiliate', [$this, 'handle_delete']);
         add_action('admin_post_sst_update_affiliate', [$this, 'handle_update']);
         add_action('admin_post_sst_save_settings', [$this, 'handle_save_settings']);
+        add_action('admin_post_sst_save_email_template', [$this, 'handle_save_email_template']);
     }
 
     /**
@@ -257,6 +258,39 @@ class SST_Affiliate_Admin_Dashboard {
         update_option('sst_affiliate_banner_text_color', sanitize_hex_color($_POST['banner_text_color']));
 
         wp_redirect(add_query_arg(['message' => 'saved'], wp_get_referer()));
+        exit;
+    }
+
+    /**
+     * Handle save email template
+     */
+    public function handle_save_email_template() {
+        check_admin_referer('sst_save_email_template');
+
+        if (!current_user_can('manage_options')) {
+            wp_die('Unauthorized');
+        }
+
+        $template_type = isset($_POST['template_type']) ? sanitize_text_field($_POST['template_type']) : '';
+        $action_type = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'save';
+
+        if (empty($template_type)) {
+            wp_redirect(add_query_arg(['error' => 'Invalid template type'], wp_get_referer()));
+            exit;
+        }
+
+        $email_template = SST_Email_Template::get_instance();
+
+        if ($action_type === 'reset') {
+            $email_template->reset_template($template_type);
+            wp_redirect(add_query_arg(['message' => 'template_reset', 'tab' => 'email-templates'], wp_get_referer()));
+        } else {
+            $subject = isset($_POST['template_subject']) ? sanitize_text_field($_POST['template_subject']) : '';
+            $body = isset($_POST['template_body']) ? sanitize_textarea_field($_POST['template_body']) : '';
+
+            $email_template->save_template($template_type, $subject, $body);
+            wp_redirect(add_query_arg(['message' => 'template_saved', 'tab' => 'email-templates'], wp_get_referer()));
+        }
         exit;
     }
 }

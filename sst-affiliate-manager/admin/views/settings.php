@@ -318,6 +318,125 @@ $notify_applicant = get_option('sst_affiliate_notify_applicant', '1');
 
     <hr>
 
+    <h2>Email Templates</h2>
+    <p class="description">Customize the emails sent to affiliates. Use placeholders like <code>{{FIRST_NAME}}</code> to insert dynamic content.</p>
+
+    <?php
+    $email_template = SST_Email_Template::get_instance();
+    $template_types = $email_template->get_template_types();
+    $current_template = isset($_GET['template']) ? sanitize_key($_GET['template']) : 'affiliate-approved';
+
+    // Display save message
+    if (isset($_GET['template_saved'])) {
+        echo '<div class="notice notice-success is-dismissible"><p>Email template saved successfully!</p></div>';
+    }
+    if (isset($_GET['template_reset'])) {
+        echo '<div class="notice notice-info is-dismissible"><p>Email template reset to default.</p></div>';
+    }
+    ?>
+
+    <!-- Template Tabs -->
+    <nav class="nav-tab-wrapper" style="margin-bottom: 20px;">
+        <?php foreach ($template_types as $type => $info): ?>
+            <a href="<?php echo add_query_arg('template', $type, admin_url('admin.php?page=sst-affiliate-settings')); ?>"
+               class="nav-tab <?php echo $current_template === $type ? 'nav-tab-active' : ''; ?>">
+                <?php echo esc_html($info['name']); ?>
+                <?php if ($email_template->is_customized($type)): ?>
+                    <span style="color: #2271b1;" title="Customized">●</span>
+                <?php endif; ?>
+            </a>
+        <?php endforeach; ?>
+    </nav>
+
+    <?php
+    $template_info = $template_types[$current_template];
+    $template_data = $email_template->get_template($current_template);
+    $placeholders = $email_template->get_placeholders($current_template);
+    ?>
+
+    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+        <!-- Template Editor -->
+        <div style="flex: 2; min-width: 400px;">
+            <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
+                <input type="hidden" name="action" value="sst_save_email_template">
+                <input type="hidden" name="template_type" value="<?php echo esc_attr($current_template); ?>">
+                <?php wp_nonce_field('sst_email_template_' . $current_template); ?>
+
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="email_subject">Subject Line</label>
+                        </th>
+                        <td>
+                            <input type="text" id="email_subject" name="email_subject"
+                                   value="<?php echo esc_attr($template_data['subject']); ?>"
+                                   class="large-text">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="email_body">Email Body</label>
+                        </th>
+                        <td>
+                            <textarea id="email_body" name="email_body" rows="20" class="large-text code"
+                                      style="font-family: monospace; white-space: pre;"><?php echo esc_textarea($template_data['body']); ?></textarea>
+                            <p class="description">Plain text email. Line breaks will be preserved.</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <p class="submit">
+                    <?php submit_button('Save Template', 'primary', 'submit', false); ?>
+                    <button type="submit" name="reset_template" value="1" class="button"
+                            onclick="return confirm('Reset this template to default? Your customizations will be lost.');">
+                        Reset to Default
+                    </button>
+                </p>
+            </form>
+        </div>
+
+        <!-- Placeholder Reference -->
+        <div style="flex: 1; min-width: 250px;">
+            <div style="background: #f0f0f1; padding: 20px; border-radius: 8px; position: sticky; top: 32px;">
+                <h3 style="margin-top: 0;">Available Placeholders</h3>
+                <p class="description">Click to copy</p>
+                <table style="width: 100%; font-size: 13px;">
+                    <?php foreach ($placeholders as $placeholder => $description): ?>
+                        <tr>
+                            <td>
+                                <code style="cursor: pointer; background: #fff; padding: 2px 6px;"
+                                      onclick="navigator.clipboard.writeText('<?php echo esc_attr($placeholder); ?>'); this.style.background='#d4edda'; setTimeout(() => this.style.background='#fff', 500);"
+                                      title="Click to copy"><?php echo esc_html($placeholder); ?></code>
+                            </td>
+                            <td style="color: #666; padding-left: 10px;"><?php echo esc_html($description); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+
+                <hr style="margin: 20px 0;">
+
+                <h4>Preview with Sample Data</h4>
+                <button type="button" class="button" onclick="togglePreview()">Show Preview</button>
+                <div id="email-preview" style="display: none; margin-top: 15px; background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 4px;">
+                    <?php
+                    $preview = $email_template->preview($current_template);
+                    ?>
+                    <p><strong>Subject:</strong> <?php echo esc_html($preview['subject']); ?></p>
+                    <hr>
+                    <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;"><?php echo esc_html($preview['body']); ?></pre>
+                </div>
+                <script>
+                function togglePreview() {
+                    var preview = document.getElementById('email-preview');
+                    preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+                }
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
     <h2>System Status</h2>
     <table class="form-table">
         <tr>

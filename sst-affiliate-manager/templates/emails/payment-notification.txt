@@ -1,0 +1,23 @@
+Subject: Money Sent: {{PAYMENT_AMOUNT}}
+
+Hey {{FIRST_NAME}},
+
+Your commission payment just went out.
+
+PAYMENT DETAILS:
+------------------------
+Amount: {{PAYMENT_AMOUNT}}
+Date: {{PAYMENT_DATE}}
+Notes: {{PAYMENT_NOTES}}
+
+YOUR STATS:
+------------------------
+Total Sales Generated: {{TOTAL_SALES}}
+Total Commission Earned: {{TOTAL_COMMISSION}}
+Commission Paid (all time): {{COMMISSION_PAID}}
+Pending Balance: {{COMMISSION_PENDING}}
+
+Thanks for spreading the word. Keep it going.
+
+- The SST Team
+SST.NYC
